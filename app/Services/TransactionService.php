@@ -6,6 +6,7 @@ namespace App\Services;
 
 use App\Models\Seller;
 use App\Models\Transaction;
+use Illuminate\Support\Str;
 
 class TransactionService
 {
@@ -27,7 +28,21 @@ class TransactionService
 
         $breakdown = $this->calculate((int) $data['amount'], $currency, $tier, $provider);
 
-        dd($breakdown);
+        return Transaction::create([
+            'seller_id'            => $seller->id,
+            'customer_id'          => $data['customer_id'],
+            'idempotency_key'      => $data['idempotency_key'] ?? Str::uuid(),
+            'payment_provider'     => $provider,
+
+            'currency'             => 'USD',
+            'gross_amount'         => $breakdown['gross_amount'],
+            'payment_provider_fee' => $breakdown['payment_provider_fee'],
+            'commission_rate'      => $breakdown['commission_rate'],
+            'commission_amount'    => $breakdown['commission_amount'],
+            'net_amount'           => $breakdown['net_amount'],
+
+            'status'               => 'completed',
+        ]);
     }
 
     public function calculate(
@@ -36,7 +51,7 @@ class TransactionService
         string $sellerTier,
         string $paymentProvider
     ): array {
-        $grossUsd = $amountCents;
+        $grossUsd = $this->convertToUsdCents($amountCents, $currency);
 
         $commissionRate = $this->getCommissionRate($sellerTier);
         $providerFee    = $this->getProviderFee($grossUsd, $paymentProvider);
@@ -72,5 +87,19 @@ class TransactionService
             'ideal'  => 0,
             default  => 0,
         };
+    }
+
+    private function convertToUsdCents(int $amountCents, string $currency): int
+    {
+        $rates = [
+            'USD' => 1.00,
+            'GBP' => 0.73,
+            'EUR' => 0.85,
+        ];
+
+        $currency = strtoupper($currency);
+        $rate = $rates[$currency] ?? 1.00; //if currency not available assume 1 exchange-rate.
+
+        return (int) round($amountCents / $rate);
     }
 }
