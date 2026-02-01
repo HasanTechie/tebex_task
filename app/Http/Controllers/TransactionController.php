@@ -2,11 +2,19 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\TransactionResource;
 use App\Models\Transaction;
+use App\Services\TransactionService;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class TransactionController extends Controller
 {
+
+    public function __construct(protected TransactionService $transactionService)
+    {
+    }
+
     /**
      * Display a listing of the resource.
      */
@@ -29,7 +37,33 @@ class TransactionController extends Controller
     public function store(Request $request)
     {
         //
-        dd($request);
+        try {
+            //Will do this validation via FormRequest class in production environment.
+            $data = $request->validate([
+                'seller_id' => ['required', 'integer', 'min:1'],
+                'amount' => ['required', 'integer', 'min:1'],
+                'currency' => ['required', 'string', 'size:3'],
+                'payment_provider' => ['required', 'string', Rule::in(['stripe', 'paypal', 'ideal'])],
+                'customer_id' => ['required', 'integer', 'min:1'],
+                'idempotency_key' => ['required', 'string', 'max:255'],
+            ]);
+
+
+            $transaction = $this->transactionService->createTransaction($data);
+            return (new TransactionResource($transaction))
+                ->response()
+                ->setStatusCode(201);
+
+        } catch (ValidationException $e) {
+            return response()->json([
+                'errors' => $e->errors(),
+            ], 422);
+
+        } catch (\Throwable $e) {
+            return response()->json([
+                'message' => $e->getMessage(),
+            ], 500);
+        }
     }
 
     /**
