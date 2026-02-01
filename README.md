@@ -1,8 +1,9 @@
 # Instructions / Assumptions
 1. Make sure to run `php artisan migrate --seed`
-2. Since it wasn't mentioned in task, I didn't added authentication.
-3. Only transaction have public ULID. Sellers and Customers have simple integer ids.
-4. Wrote tests for transaction posting, retrieving and seller monthly commission report.
+2. Only USD,GBP,EUR currencies supported at the moment, other currencies will result in conversion to USD rate of 1.
+3. Since it wasn't mentioned in task, I didn't added authentication.
+4. Only transaction have public ULID. Sellers and Customers have simple integer ids.
+5. Wrote tests for transaction posting, retrieving and seller monthly commission report.
 
 API end points example:
 
@@ -27,6 +28,31 @@ For retrieving monthly seller commission summary by each month.
 ```bash
 GET /api/v1/sellers/1/commission-summary?period=monthly
 ```
+**Expected Response will be like this:**
+```json
+{
+    "seller_id": "3",
+    "period": "monthly",
+    "currency": "USD",
+    "data": [
+        {
+            "period": "2026-02",
+            "total_transactions": 4,
+            "total_gross_amount": 135000,
+            "total_commission": 9450,
+            "total_net_amount": 121515
+        },
+        {
+            "period": "2026-01",
+            "total_transactions": 1,
+            "total_gross_amount": 10000,
+            "total_commission": 700,
+            "total_net_amount": 8980
+        }
+    ]
+}
+```
+
 
 # Tebex PHP Technical Assessment
 
