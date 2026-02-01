@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\SellerController;
 use App\Http\Controllers\TransactionController;
 use Illuminate\Support\Facades\Route;
 
@@ -22,4 +23,6 @@ use Illuminate\Support\Facades\Route;
 Route::prefix('v1')->group(function () {
     Route::post('/transactions', [TransactionController::class, 'store']);
     Route::get('/transactions/{id}', [TransactionController::class, 'show']);
+
+    Route::get('/sellers/{id}/commission-summary', [SellerController::class, 'commissionSummary']);
 });
