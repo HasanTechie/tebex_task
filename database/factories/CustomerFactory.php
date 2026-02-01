@@ -18,6 +18,7 @@ class CustomerFactory extends Factory
     {
         return [
             //
+            'name' => $this->faker->name(),
         ];
     }
 }

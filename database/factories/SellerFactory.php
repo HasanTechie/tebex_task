@@ -18,6 +18,12 @@ class SellerFactory extends Factory
     {
         return [
             //
+            'name' => $this->faker->company(),
+            'tier' => $this->faker->randomElement([
+                'starter',
+                'pro',
+                'enterprise',
+            ]),
         ];
     }
 }
