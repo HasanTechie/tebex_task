@@ -19,8 +19,8 @@ return new class extends Migration
             $table->foreignIdFor(Seller::class);
             $table->foreignIdFor(Customer::class);
             $table->unsignedInteger('gross_amount');
-            $table->string('currency', 3);
-            $table->string('payment_provider');
+            $table->char('currency', 3)->default('USD');
+            $table->string('payment_provider')->default('stripe');
             $table->unsignedInteger('payment_provider_fee');
             $table->decimal('commission_rate');
             $table->unsignedInteger('commission_amount');
