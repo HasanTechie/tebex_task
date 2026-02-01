@@ -11,6 +11,11 @@ class Seller extends Model
     /** @use HasFactory<SellerFactory> */
     use HasFactory;
 
+    protected $fillable = [
+        'name',
+        'tier'
+    ];
+
     public function transactions()
     {
         return $this->hasMany(Transaction::class);

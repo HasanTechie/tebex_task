@@ -10,4 +10,8 @@ class Customer extends Model
 {
     /** @use HasFactory<CustomerFactory> */
     use HasFactory;
+
+    protected $fillable = [
+        'name',
+    ];
 }
