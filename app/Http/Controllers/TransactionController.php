@@ -7,6 +7,7 @@ use App\Models\Transaction;
 use App\Services\TransactionService;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
 
 class TransactionController extends Controller
 {
@@ -69,9 +70,19 @@ class TransactionController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Transaction $transaction)
+    public function show(string $transactionId)
     {
         //
+        $transaction = Transaction::where('public_id', $transactionId)->first();
+
+        if (!$transaction) {
+            return response()->json([
+                'error' => 'Transaction not found',
+                'message' => "Transaction with ID {$transactionId} does not exist",
+            ], 404);
+        }
+
+        return new TransactionResource($transaction);
     }
 
     /**
