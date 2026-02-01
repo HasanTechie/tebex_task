@@ -1,3 +1,33 @@
+# Instructions / Assumptions
+1. Make sure to run `php artisan migrate --seed`
+2. Since it wasn't mentioned in task, I didn't added authentication.
+3. Only transaction have public ULID. Sellers and Customers have simple integer ids.
+4. Wrote tests for transaction posting, retrieving and seller monthly commission report.
+
+API end points example:
+
+```bash
+POST /api/v1/transactions
+Content-Type: application/json
+
+{
+  "seller_id": 1,
+  "amount": 10000, // Amount in cents
+  "currency": "USD",
+  "payment_provider": "stripe",
+  "customer_id": 1,
+  "idempotency_key": "unique-key-123"
+}
+```
+For retrieving transaction via transaction public_key:
+```bash
+GET /api/v1/transactions/01KGD2C521DN6JWKT6P8SWFFG6
+```
+For retrieving monthly seller commission summary by each month.
+```bash
+GET /api/v1/sellers/1/commission-summary?period=monthly
+```
+
 # Tebex PHP Technical Assessment
 
 ## About Tebex
